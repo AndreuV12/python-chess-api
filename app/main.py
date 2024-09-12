@@ -4,6 +4,8 @@ from sqlalchemy.orm import Session
 from app.db import engine, Base, get_db
 from app.models import User
 
+from app.services.position import create_initial_position
+
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
@@ -26,3 +28,9 @@ def read_root():
 def get_users(db: Session = Depends(get_db)):
     users = db.query(User).all()  # Obtener todos los usuarios
     return users
+
+
+@app.get("/position/")
+def read_root():
+    pos = create_initial_position()
+    return pos
