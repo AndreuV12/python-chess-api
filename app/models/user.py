@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String
-from app.db import Base  # Asegúrate de que `Base` se importa desde `db.py`
+from app.models import Base
 
 
 class User(Base):
@@ -7,3 +7,4 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
     email = Column(String, unique=True, index=True)
+    hashed_password = Column(String)
