@@ -1,57 +1,39 @@
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
-
-# from app.db import get_db
+# services/user.py
+import jwt
+from datetime import datetime, timedelta, timezone
 from sqlalchemy.orm import Session
 from app.models import User
+from app.schemas.user import UserCreate
 
-from jose import JWTError, jwt
-from datetime import datetime, timedelta, timezone
-
-SECRET_KEY = "mysecretkey"  # Cambia esto por una clave secreta fuerte
+# Configuración para JWT
+SECRET_KEY = "mysecretkey"  # Usa una clave secreta robusta en producción
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 24 * 60
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
-def authenticate_user(username: str, password: str, db: Session):
-    user = db.query(User).filter(User.name == username).first()
-    return user and password == user.password
-
-
-def create_access_token(data: dict, expires_delta: timedelta = None):
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.now(timezone.utc) + expires_delta
-    else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
-
-
-def get_current_user(db: Session, token: str = Depends(oauth2_scheme)):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
+def create_user(db: Session, user_create: UserCreate):
+    db_user = User(
+        username=user_create.username,
+        email=user_create.email,
+        password=user_create.password,
     )
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
 
-    try:
-        # Decodificar el token JWT
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
-            raise credentials_exception
-    except JWTError:
-        raise credentials_exception
 
-    # Buscar al usuario en la base de datos
+def authenticate_user(db: Session, username: str, password: str):
     user = db.query(User).filter(User.username == username).first()
-    if user is None:
-        raise credentials_exception
-    return user
+    if user and user.password == password:
+        return {"username": username, "email": user.email}
+    return None
 
 
-# authenticate_user("Andreu", "Andreu0521!",  )
+def generate_jwt(username: str, email: str) -> str:
+    expiration = datetime.now(timezone.utc) + timedelta(
+        minutes=ACCESS_TOKEN_EXPIRE_MINUTES
+    )
+    payload = {"sub": username, "email": email, "exp": expiration}
+    token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+    return token

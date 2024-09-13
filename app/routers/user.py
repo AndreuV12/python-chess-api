@@ -1,36 +1,24 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+# routers/user.py
+from fastapi import APIRouter, HTTPException, Depends
 from fastapi.security import OAuth2PasswordRequestForm
-from datetime import timedelta
-
-from app.schemas.user import Token
-from ..services.user import (
-    ACCESS_TOKEN_EXPIRE_MINUTES,
-    authenticate_user,
-    create_access_token,
-)  # Importar la función de autenticación
-from ..db import get_db
+from sqlalchemy.orm import Session
+from app.schemas.user import UserCreate, UserRead
+from app.services.user import authenticate_user, create_user, generate_jwt
+from app.db import get_db
 
 router = APIRouter()
 
 
-@router.post("/login", response_model=Token)
-def login_for_access_token(
-    form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
-):
-    # Usar la función de autenticación desde el archivo de servicios
-    user = authenticate_user(db, form_data.username, form_data.password)
+@router.post("/register", response_model=UserRead)
+async def register_user(user: UserCreate, db: Session = Depends(get_db)):
+    db_user = create_user(db, user)
+    return db_user
 
+
+@router.post("/login")
+async def login(username: str, password: str, db: Session = Depends(get_db)):
+    user = authenticate_user(db, username, password)
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
-    )
-
-    return {"access_token": access_token, "token_type": "bearer"}
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    token = generate_jwt(user["username"], user["email"])
+    return {"access_token": token, "token_type": "bearer"}

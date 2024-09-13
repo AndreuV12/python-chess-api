@@ -1,12 +1,10 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
-from app.db import engine, get_db
+from app.db import engine
 from app.models import Base
 
-from app.services.position import create_initial_position
 from app.services.stockfish import ChessAnalysisService
-from app.services.user import authenticate_user
+from app.routers import user
 
 app = FastAPI()
 app.add_middleware(
@@ -21,21 +19,12 @@ app.add_middleware(
 Base.metadata.create_all(bind=engine)
 analysis_service = ChessAnalysisService()
 
+app.include_router(user.router, prefix="/api", tags=["users"])
+
 
 @app.get("/")
 def read_root():
     return {"message": "Hello World"}
-
-
-@app.get("/users/")
-def get_users(db: Session = Depends(get_db)):
-    return authenticate_user(username="Andreu", password="Andreu0521!", db=db)
-
-
-@app.get("/position/")
-def get_initial_position():
-    pos = create_initial_position()
-    return pos
 
 
 @app.get("/analisis")
