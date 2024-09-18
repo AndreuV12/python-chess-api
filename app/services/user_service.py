@@ -3,7 +3,7 @@ import jwt
 from datetime import datetime, timedelta, timezone
 from sqlalchemy.orm import Session
 from app.models import User
-from app.schemas.user import UserCreate
+from app.schemas.user_schema import UserCreate
 
 # Configuración para JWT
 SECRET_KEY = "mysecretkey"  # Usa una clave secreta robusta en producción
@@ -23,11 +23,12 @@ def create_user(db: Session, user_create: UserCreate):
     return db_user
 
 
-def authenticate_user(db: Session, username: str, password: str):
-    user = db.query(User).filter(User.username == username).first()
-    if user and user.password == password:
-        return {"username": username, "email": user.email}
-    return None
+def get_user_by_username(db: Session, username: str) -> User:
+    return db.query(User).filter(User.username == username).first()
+
+
+def get_user_by_email(db: Session, email: str):
+    return db.query(User).filter(User.email == email).first()
 
 
 def generate_jwt(username: str, email: str) -> str:

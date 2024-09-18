@@ -7,6 +7,6 @@ class UserCreate(BaseModel):
     password: str
 
 
-class UserRead(BaseModel):
+class LoginRequest(BaseModel):
     username: str
-    email: str
+    password: str

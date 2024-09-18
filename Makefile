@@ -1,7 +1,18 @@
+# .PHONY: run
+libs:
+	@echo "Installing libraries..."
+	pip install --upgrade pip
+	pip install --progress-bar on --no-cache-dir -r ./app/api/requirements_dev.txt
 
-PROJECT_DIR := $(shell pwd)
+setpath:
+	export PYTHONPATH="./app/"
 
 run:
-    @export PYTHONPATH=$(PROJECT_DIR) && uvicorn app.main:app --reload
+	@echo "RUNING APP"
+	export PYTHONPATH="./app/"
+	uvicorn app.main:app --reload
 
+revision:
+	@read -p "Msg: " msg; \
+	alembic revision --autogenerate -m "$$msg"
 # Puedes agregar otras tareas aquí, por ejemplo, para ejecutar tests o migraciones
