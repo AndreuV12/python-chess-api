@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.db import engine
 from app.models import Base
 
-from app.routers import user_router
+from app.routers import user_router, opening_router
 
 Base.metadata.create_all(bind=engine)
 
@@ -19,3 +19,4 @@ app.add_middleware(
 )
 
 app.include_router(user_router.router, prefix="/users", tags=["users"])
+app.include_router(opening_router.router, prefix="/openings", tags=["openings"])

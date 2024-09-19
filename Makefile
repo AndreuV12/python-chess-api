@@ -15,4 +15,8 @@ run:
 revision:
 	@read -p "Msg: " msg; \
 	alembic revision --autogenerate -m "$$msg"
+
+freeze:
+	pip freeze > requirements.txt
+
 # Puedes agregar otras tareas aquí, por ejemplo, para ejecutar tests o migraciones
