@@ -2,7 +2,7 @@
 libs:
 	@echo "Installing libraries..."
 	pip install --upgrade pip
-	pip install --progress-bar on --no-cache-dir -r ./app/api/requirements_dev.txt
+	pip install --progress-bar on --no-cache-dir -r ./requirements.txt
 
 setpath:
 	export PYTHONPATH="./app/"

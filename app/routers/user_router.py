@@ -1,17 +1,22 @@
 from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi.security import OAuth2PasswordRequestForm
+
 from sqlalchemy.orm import Session
 
-from app.db import get_db
+from app.dependencies import get_db, get_current_user
 from typing import Annotated
 
-from app.schemas.user_schema import UserCreate, LoginRequest, UserRead
+from app.schemas.user_schema import UserCreate, UserRead
 
 from app.services.user_service import (
     get_user_by_username,
     get_user_by_email,
     create_user,
 )
-from app.services.auth_service import generate_jwt, get_current_user
+from app.services.auth_service import (
+    create_access_token,
+    get_authenticated_user,
+)
 
 
 router = APIRouter()
@@ -32,22 +37,21 @@ async def register_user(user: UserCreate, db: Session = Depends(get_db)):
             detail="El correo electrónico ya está en uso.",
         )
     created_user = create_user(db, user)
-    token = generate_jwt(created_user.username, created_user.email)
+    acces_token_data = {"sub": created_user.username, "email": created_user.email}
+    token = create_access_token(data=acces_token_data)
     return {"access_token": token, "token_type": "bearer"}
 
 
 @router.post("/login")
-async def login(request: LoginRequest, db: Session = Depends(get_db)):
-    user = get_user_by_username(db, request.username)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Usuario no encontrado"
-        )
-    elif user.password != request.password:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Contraseña incorrecta"
-        )
-    token = generate_jwt(user.username, user.email)
+async def login(
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    db: Session = Depends(get_db),
+):
+    user = get_authenticated_user(
+        db=db, username=form_data.username, password=form_data.password
+    )
+    acces_token_data = {"sub": user.username, "email": user.email}
+    token = create_access_token(data=acces_token_data)
     return {"access_token": token, "token_type": "bearer"}
 
 

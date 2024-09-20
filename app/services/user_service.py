@@ -1,6 +1,3 @@
-# services/user.py
-import jwt
-from datetime import datetime, timedelta, timezone
 from sqlalchemy.orm import Session
 from app.models import User
 from app.schemas.user_schema import UserCreate

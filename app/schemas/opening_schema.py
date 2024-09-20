@@ -13,9 +13,6 @@ class OpeningRead(BaseModel):
     name: str
     data: Dict[str, "Move"]
 
-    # def __str__(self) -> str:
-    #     return json.dumps(self.model_dump(), indent=4)
-
 
 class OpeningReadReduced(BaseModel):
     id: int
@@ -24,5 +21,4 @@ class OpeningReadReduced(BaseModel):
 
 class OpeningCreate(BaseModel):
     name: str
-    user_id: int
     data: Dict[str, "Move"] = {}

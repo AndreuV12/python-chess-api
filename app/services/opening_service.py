@@ -5,10 +5,10 @@ from app.schemas.opening_schema import OpeningCreate
 from typing import List
 
 
-def create_opening(db: Session, opening_create: OpeningCreate):
+def create_opening(db: Session, opening_create: OpeningCreate, user_id: int) -> Opening:
     db_opening = Opening(
+        user_id=user_id,
         name=opening_create.name,
-        user_id=opening_create.user_id,
         data=opening_create.data,
     )
     db.add(db_opening)
