@@ -5,7 +5,7 @@ from app.services.user_service import get_user_by_username
 
 SECRET_KEY = "mysecretkey"  # Usa una clave secreta robusta en producción
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
 
 
 def get_authenticated_user(db: Session, username: str, password: str):
