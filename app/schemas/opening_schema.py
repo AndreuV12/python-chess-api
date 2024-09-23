@@ -1,6 +1,5 @@
 from pydantic import BaseModel
-from typing import Dict, Optional, List, Any
-import json
+from typing import Dict, Optional
 
 
 class Move(BaseModel):
@@ -11,7 +10,7 @@ class Move(BaseModel):
 class OpeningRead(BaseModel):
     id: int
     name: str
-    data: Dict[str, "Move"]
+    data: Move
 
 
 class OpeningReadReduced(BaseModel):
@@ -21,4 +20,6 @@ class OpeningReadReduced(BaseModel):
 
 class OpeningCreate(BaseModel):
     name: str
-    data: Dict[str, "Move"] = {}
+    data: Move = Move(
+        fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", moves={}
+    )
