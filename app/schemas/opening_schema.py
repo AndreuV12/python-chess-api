@@ -1,10 +1,16 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Dict, Optional
+
+
+class Analysis(BaseModel):
+    score: int
+    source: str
 
 
 class Move(BaseModel):
     fen: str
-    moves: Optional[Dict[str, "Move"]] = {}
+    analysis: Optional[Analysis] = None
+    moves: Dict[str, "Move"] = Field(default_factory=dict)
 
 
 class OpeningRead(BaseModel):
@@ -23,3 +29,8 @@ class OpeningCreate(BaseModel):
     data: Move = Move(
         fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", moves={}
     )
+
+
+class OpeningUpdate(BaseModel):
+    name: Optional[str] = None
+    data: Optional[Move] = None
