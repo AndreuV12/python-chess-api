@@ -41,11 +41,12 @@ async def add_opening(
 async def read_user_openings(
     db: Session = Depends(get_db),
     current_user: UserRead = Depends(get_current_user),
+    name: str = Query(None),
     skip: int = Query(0, ge=0),
     limit: int = Query(10, ge=1),
 ):
     openings_data = get_openings_by_user(
-        db, user_id=current_user.id, skip=skip, limit=limit
+        db, user_id=current_user.id, name=name, skip=skip, limit=limit
     )
     return OpeningsList(
         total=openings_data["total"], openings=openings_data["openings"]

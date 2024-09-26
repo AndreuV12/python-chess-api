@@ -26,16 +26,17 @@ def create_opening(db: Session, user_id: int, opening_create: OpeningCreate) -> 
 
 
 def get_openings_by_user(
-    db: Session, user_id: int, skip: int = 0, limit: int = 10
+    db: Session,
+    user_id: int,
+    name: str,
+    skip: int = 0,
+    limit: int = 10,
 ) -> OpeningsList:
-    total_openings = db.query(Opening).filter(Opening.user_id == user_id).count()
-    openings = (
-        db.query(Opening)
-        .filter(Opening.user_id == user_id)
-        .offset(skip)
-        .limit(limit)
-        .all()
-    )
+    query = db.query(Opening).filter(Opening.user_id == user_id)
+    if name:
+        query = query.filter(Opening.name.ilike(f"%{name}%"))
+    total_openings = query.count()
+    openings = query.offset(skip).limit(limit).all()
     openings_reduced = [
         OpeningReadReduced(id=opening.id, name=opening.name) for opening in openings
     ]
