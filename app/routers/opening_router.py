@@ -7,7 +7,6 @@ from app.schemas.opening_schema import (
     OpeningCreate,
     OpeningRead,
     OpeningUpdate,
-    OpeningReadReduced,
     OpeningsList,
     AddMoveRequest,
 )
