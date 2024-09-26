@@ -1,8 +1,6 @@
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from app.dependencies import get_db, get_current_user
-
-from typing import List
 
 from app.schemas.user_schema import UserRead
 from app.schemas.opening_schema import (
@@ -10,7 +8,8 @@ from app.schemas.opening_schema import (
     OpeningRead,
     OpeningUpdate,
     OpeningReadReduced,
-    Move,
+    OpeningsList,
+    AddMoveRequest,
 )
 
 from app.services.opening_service import (
@@ -26,7 +25,7 @@ router = APIRouter()
 
 
 # opening router
-@router.post("/", response_model=OpeningRead)
+@router.post("", response_model=OpeningRead)
 async def add_opening(
     opening: OpeningCreate,
     db: Session = Depends(get_db),
@@ -38,12 +37,19 @@ async def add_opening(
     return created_opening
 
 
-@router.get("/", response_model=List[OpeningReadReduced])
+@router.get("", response_model=OpeningsList)
 async def read_user_openings(
-    db: Session = Depends(get_db), current_user: UserRead = Depends(get_current_user)
+    db: Session = Depends(get_db),
+    current_user: UserRead = Depends(get_current_user),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1),
 ):
-    openings: List[OpeningReadReduced] = get_openings_by_user(db, current_user.id)
-    return openings
+    openings_data = get_openings_by_user(
+        db, user_id=current_user.id, skip=skip, limit=limit
+    )
+    return OpeningsList(
+        total=openings_data["total"], openings=openings_data["openings"]
+    )
 
 
 @router.get("/{id}", response_model=OpeningRead)
@@ -59,15 +65,16 @@ async def read_user_opening_by_id(
 @router.patch("/{id}/add_move", response_model=OpeningRead)
 async def add_move_to_opening(
     id: int,
-    move: Move,
-    move_name: str,
-    path: List[str],  # Ruta hasta la posición donde se añade el movimiento
+    add_move_request: AddMoveRequest,
     db: Session = Depends(get_db),
     current_user: UserRead = Depends(get_current_user),
 ):
     opening = get_user_opening_by_id(db, current_user.id, id)
     computed_updated_opening = compute_opening_after_move(
-        opening, move, move_name, path
+        opening,
+        add_move_request.move,
+        add_move_request.move_name,
+        add_move_request.path,
     )
     opening_update = OpeningUpdate(data=computed_updated_opening.data)
     updated_opening = update_user_opening(

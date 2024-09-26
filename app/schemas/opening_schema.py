@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 
 class Analysis(BaseModel):
@@ -24,6 +24,11 @@ class OpeningReadReduced(BaseModel):
     name: str
 
 
+class OpeningsList(BaseModel):
+    openings: List[OpeningReadReduced]
+    total: int
+
+
 class OpeningCreate(BaseModel):
     name: str
     data: Move = Move(
@@ -34,3 +39,9 @@ class OpeningCreate(BaseModel):
 class OpeningUpdate(BaseModel):
     name: Optional[str] = None
     data: Optional[Move] = None
+
+
+class AddMoveRequest(BaseModel):
+    move_name: str
+    move: Move
+    path: List[str]

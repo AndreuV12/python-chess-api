@@ -3,7 +3,13 @@ from fastapi import HTTPException, status
 
 from sqlalchemy.orm import Session
 from app.models import Opening
-from app.schemas.opening_schema import OpeningCreate, OpeningUpdate, Move
+from app.schemas.opening_schema import (
+    OpeningCreate,
+    OpeningUpdate,
+    OpeningReadReduced,
+    OpeningsList,
+    Move,
+)
 from typing import List
 
 
@@ -19,8 +25,21 @@ def create_opening(db: Session, user_id: int, opening_create: OpeningCreate) -> 
     return db_opening
 
 
-def get_openings_by_user(db: Session, user_id: int) -> List[Opening]:
-    return db.query(Opening).filter(Opening.user_id == user_id).all()
+def get_openings_by_user(
+    db: Session, user_id: int, skip: int = 0, limit: int = 10
+) -> OpeningsList:
+    total_openings = db.query(Opening).filter(Opening.user_id == user_id).count()
+    openings = (
+        db.query(Opening)
+        .filter(Opening.user_id == user_id)
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+    openings_reduced = [
+        OpeningReadReduced(id=opening.id, name=opening.name) for opening in openings
+    ]
+    return {"total": total_openings, "openings": openings_reduced}
 
 
 def get_user_opening_by_id(
