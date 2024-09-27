@@ -39,3 +39,27 @@ class ChessAnalysisService:
         engine.quit()
 
         return {"evaluation": evaluation, "best_moves": best_moves}
+
+    # def evaluate_move(fen, move):
+
+    #     fen = data.get("fen")  # Recibe la posición en FEN
+    #     move_uci = data.get("move")  # Movimiento en formato UCI (ej: "e2e4")
+
+    #     # Crear el tablero a partir del FEN
+    #     board = chess.Board(fen)
+
+    #     # Convertir el movimiento desde UCI (Universal Chess Interface) a un movimiento válido
+    #     move = chess.Move.from_uci(move_uci)
+
+    #     # Asegurarse de que el movimiento es legal en la posición
+    #     if move not in board.legal_moves:
+    #         return jsonify({"error": "Movimiento ilegal"}), 400
+
+    #     # Realizar el movimiento
+    #     board.push(move)
+
+    #     # Evaluar la nueva posición después de realizar el movimiento
+    #     info = engine.analyse(board, chess.engine.Limit(time=1.0))
+    #     score = info["score"].relative.score(mate_score=10000) / 100  # Conversión de centipawns a peones
+
+    #     return jsonify({"evaluation_after_move": score})

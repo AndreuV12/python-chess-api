@@ -9,6 +9,8 @@ class Analysis(BaseModel):
 
 class Move(BaseModel):
     fen: str
+    uci: Optional[str] = None
+    name: Optional[str] = None
     analysis: Optional[Analysis] = None
     moves: Dict[str, "Move"] = Field(default_factory=dict)
 
@@ -42,6 +44,5 @@ class OpeningUpdate(BaseModel):
 
 
 class AddMoveRequest(BaseModel):
-    move_name: str
     move: Move
     path: List[str]

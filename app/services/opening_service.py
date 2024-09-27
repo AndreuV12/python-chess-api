@@ -82,7 +82,7 @@ def update_user_opening(
 
 
 def compute_opening_after_move(
-    opening: Opening, move: Move, move_name: str, path: List[str]
+    opening: Opening, move: Move, path: List[str]
 ) -> Opening:
     opening_copy = deepcopy(opening)
     data = opening_copy.data
@@ -91,5 +91,5 @@ def compute_opening_after_move(
             data = data["moves"][p]
         else:
             raise ValueError(f"Move '{p}' not found in the path.")
-    data["moves"][move_name] = move
+    data["moves"][move.uci] = move
     return opening_copy

@@ -73,7 +73,6 @@ async def add_move_to_opening(
     computed_updated_opening = compute_opening_after_move(
         opening,
         add_move_request.move,
-        add_move_request.move_name,
         add_move_request.path,
     )
     opening_update = OpeningUpdate(data=computed_updated_opening.data)
