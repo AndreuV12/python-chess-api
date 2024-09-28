@@ -1,17 +1,12 @@
 from pydantic import BaseModel, Field
-from typing import Dict, List, Optional
-
-
-class Analysis(BaseModel):
-    score: int
-    source: str
+from typing import Dict, List, Any, Optional
 
 
 class Move(BaseModel):
     fen: str
     uci: Optional[str] = None
     name: Optional[str] = None
-    analysis: Optional[Analysis] = None
+    analysis: Optional[Any] = None
     moves: Dict[str, "Move"] = Field(default_factory=dict)
 
 

@@ -5,7 +5,7 @@ libs:
 	pip install --progress-bar on --no-cache-dir -r ./requirements.txt
 
 setpath:
-	export PYTHONPATH="./app/"
+	export PYTHONPATH="/Users/andreu/python-chess-api/app/"
 
 run:
 	@echo "RUNING APP"

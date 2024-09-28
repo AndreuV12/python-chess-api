@@ -10,6 +10,7 @@ from app.schemas.opening_schema import (
     OpeningsList,
     Move,
 )
+from app.services.stockfish_service import ChessAnalysisService
 from typing import List
 
 
@@ -91,5 +92,7 @@ def compute_opening_after_move(
             data = data["moves"][p]
         else:
             raise ValueError(f"Move '{p}' not found in the path.")
+    stockfish = ChessAnalysisService()
+    move.analysis = stockfish.analyze_position(move.fen, depth=16)
     data["moves"][move.uci] = move
     return opening_copy
