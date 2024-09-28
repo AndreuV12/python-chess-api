@@ -4,7 +4,7 @@ from typing import Dict, List, Any, Optional
 
 class Move(BaseModel):
     fen: str
-    uci: Optional[str] = None
+    uci: str
     name: Optional[str] = None
     analysis: Optional[Any] = None
     moves: Dict[str, "Move"] = Field(default_factory=dict)
@@ -29,7 +29,7 @@ class OpeningsList(BaseModel):
 class OpeningCreate(BaseModel):
     name: str
     data: Move = Move(
-        fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", moves={}
+        fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", uci="", moves={}
     )
 
 

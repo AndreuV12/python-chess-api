@@ -93,6 +93,7 @@ def compute_opening_after_move(
         else:
             raise ValueError(f"Move '{p}' not found in the path.")
     stockfish = ChessAnalysisService()
+    move.name = stockfish.get_move_name(data["fen"], move.uci)
     move.analysis = stockfish.analyze_position(move.fen, depth=16)
     data["moves"][move.uci] = move
     return opening_copy

@@ -33,12 +33,18 @@ class ChessAnalysisService:
         best_moves = []
         for result in results:
             move = result["pv"][0]
+            move_uci = move.uci()
             score, mate_in = get_score_and_mate_in(result)
-            pv = [move.uci() for move in result["pv"][1 : pv_deep + 1]]
+            # pv = [{move.uci()} for move in result["pv"][1 : pv_deep + 1]]
             best_moves.append(
-                {"uci": move.uci(), "score": score, "mate_in": mate_in, "pv": pv}
+                {
+                    "name": self.get_move_name(fen, move_uci),
+                    "uci": move_uci,
+                    "score": score,
+                    "mate_in": mate_in,
+                    # "pv": pv,
+                }
             )
-
         return best_moves
 
     def evaluate_move(self, fen, move_uci, depth=10):
@@ -48,6 +54,11 @@ class ChessAnalysisService:
         info = self.engine.analyse(board, chess.engine.Limit(depth=depth))
         score = info["score"].relative.score(mate_score=10000)  # Igualar el uso
         return score
+
+    def get_move_name(self, fen, move_uci):
+        board = chess.Board(fen)
+        move = chess.Move.from_uci(move_uci)
+        return board.san(move)
 
 
 if __name__ == "__main__":
