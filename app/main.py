@@ -10,13 +10,17 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000"
-    ],  # La URL donde está corriendo tu app de Vue.js
+    allow_origins=["http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],  # Permitir todos los métodos HTTP
     allow_headers=["*"],  # Permitir todos los headers
 )
+
+
+@app.get("/")
+async def entry_point():  # Asegúrate de definir el modelo User
+    return "Chess studio api is running!"
+
 
 app.include_router(user_router.router, prefix="/users", tags=["users"])
 app.include_router(opening_router.router, prefix="/openings", tags=["openings"])
