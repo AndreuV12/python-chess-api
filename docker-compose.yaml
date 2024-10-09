@@ -1,0 +1,32 @@
+services:
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: andreu
+      POSTGRES_PASSWORD: andreu
+      POSTGRES_DB: chess_studio_local
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  api:
+    build: 
+      context: ./  
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      POSTGRES_USER: andreu
+      POSTGRES_PASSWORD: andreu
+      POSTGRES_SERVER: db
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: chess_studio_local
+      STOCKFISH_PATH: /usr/games/stockfish
+
+volumes:
+  pgdata:
+
+
+  
