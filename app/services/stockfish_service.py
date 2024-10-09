@@ -17,9 +17,7 @@ class ChessAnalysisService:
     def __init__(self):
         settings = get_settings()
         self.stockfish_path = settings.STOCKFISH_PATH
-        self.engine = chess.engine.SimpleEngine.popen_uci(
-            self.stockfish_path
-        )  # Inicia el motor aquí
+        self.engine = chess.engine.SimpleEngine.popen_uci(self.stockfish_path)
 
     def __del__(self):
         self.engine.quit()
@@ -46,7 +44,6 @@ class ChessAnalysisService:
                     "uci": move_uci,
                     "score": score,
                     "mate_in": mate_in,
-                    # "pv": pv,
                 }
             )
         return best_moves
