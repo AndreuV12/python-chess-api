@@ -7,14 +7,17 @@ load_dotenv(override=True)
 
 # Definir la clase de configuración
 class Settings(BaseSettings):
-    POSTGRES_USER: str = "postgres"
-    POSTGRES_PASSWORD: str = ""
-    POSTGRES_SERVER: str = "localhost"
+    POSTGRES_USER: str
+    POSTGRES_PASSWORD: str
+    POSTGRES_SERVER: str
     POSTGRES_PORT: int = 5432
-    POSTGRES_DB: str = "postgres"
-    STOCKFISH_PATH: str = ""
+    POSTGRES_DB: str
+    STOCKFISH_PATH: str
 
     def get_database_url(self) -> str:
+        print(
+            f"postgresql+psycopg2://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_SERVER}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+        )
         return f"postgresql+psycopg2://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_SERVER}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
 
