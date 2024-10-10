@@ -97,3 +97,20 @@ def compute_opening_after_move(
     move.analysis = stockfish.analyze_position(move.fen, depth=16)
     data["moves"][move.uci] = move
     return opening_copy
+
+
+def compute_opening_after_delete_move(
+    opening: Opening, move: Move, path: List[str]
+) -> Opening:
+    opening_copy = deepcopy(opening)
+    data = opening_copy.data
+    for p in path:
+        if p in data["moves"]:
+            data = data["moves"][p]
+        else:
+            raise ValueError(f"Move '{p}' not found in the path.")
+    if move.uci in data["moves"]:
+        del data["moves"][move.uci]
+    else:
+        raise ValueError(f"Move '{move.uci}' not found in the current position.")
+    return opening_copy

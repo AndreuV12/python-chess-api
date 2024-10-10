@@ -9,6 +9,7 @@ from app.schemas.opening_schema import (
     OpeningUpdate,
     OpeningsList,
     AddMoveRequest,
+    DeleteMoveRequest,
 )
 
 from app.services.opening_service import (
@@ -18,6 +19,7 @@ from app.services.opening_service import (
     delete_user_opening_by_id,
     update_user_opening,
     compute_opening_after_move,
+    compute_opening_after_delete_move,
 )
 
 router = APIRouter()
@@ -74,6 +76,26 @@ async def add_move_to_opening(
         opening,
         add_move_request.move,
         add_move_request.path,
+    )
+    opening_update = OpeningUpdate(data=computed_updated_opening.data)
+    updated_opening = update_user_opening(
+        db, current_user.id, opening.id, opening_update
+    )
+    return updated_opening
+
+
+@router.patch("/{id}/delete_move", response_model=OpeningRead)
+async def delete_move_from_opening(
+    id: int,
+    delete_move_request: DeleteMoveRequest,
+    db: Session = Depends(get_db),
+    current_user: UserRead = Depends(get_current_user),
+):
+    opening = get_user_opening_by_id(db, current_user.id, id)
+    computed_updated_opening = compute_opening_after_delete_move(
+        opening,
+        delete_move_request.move,
+        delete_move_request.path,
     )
     opening_update = OpeningUpdate(data=computed_updated_opening.data)
     updated_opening = update_user_opening(

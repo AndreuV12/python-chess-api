@@ -41,3 +41,8 @@ class OpeningUpdate(BaseModel):
 class AddMoveRequest(BaseModel):
     move: Move
     path: List[str]
+
+
+class DeleteMoveRequest(BaseModel):
+    move: Move
+    path: List[str]
