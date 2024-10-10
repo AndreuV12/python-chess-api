@@ -19,6 +19,8 @@ def create_opening(db: Session, user_id: int, opening_create: OpeningCreate) -> 
         user_id=user_id,
         name=opening_create.name,
         data=opening_create.data.model_dump(),
+        color=opening_create.color,
+        preview_fen=opening_create.preview_fen,
     )
     db.add(db_opening)
     db.commit()
@@ -38,9 +40,7 @@ def get_openings_by_user(
         query = query.filter(Opening.name.ilike(f"%{name}%"))
     total_openings = query.count()
     openings = query.offset(skip).limit(limit).all()
-    openings_reduced = [
-        OpeningReadReduced(id=opening.id, name=opening.name) for opening in openings
-    ]
+    openings_reduced = [OpeningReadReduced(**opening.__dict__) for opening in openings]
     return {"total": total_openings, "openings": openings_reduced}
 
 
