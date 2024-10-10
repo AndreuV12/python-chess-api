@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
 
 # Cargar las variables de entorno desde el archivo .env
-load_dotenv(override=True)
+load_dotenv(".env.local")
 
 
 # Definir la clase de configuración

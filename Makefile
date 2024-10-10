@@ -19,4 +19,14 @@ revision:
 freeze:
 	pip freeze > requirements.txt
 
+
+docker-build:
+	docker-compose build
+
+docker-up:
+	docker-compose up
+
+docker-down:
+	docker-compose down
+
 # Puedes agregar otras tareas aquí, por ejemplo, para ejecutar tests o migraciones

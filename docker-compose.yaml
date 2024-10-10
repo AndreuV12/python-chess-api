@@ -1,10 +1,7 @@
 services:
   db:
     image: postgres:13
-    environment:
-      POSTGRES_USER: andreu
-      POSTGRES_PASSWORD: andreu
-      POSTGRES_DB: chess_studio_local
+    env_file: "./.env.docker"
     ports:
       - "5433:5432"
     volumes:
@@ -17,13 +14,7 @@ services:
       - "8000:8000"
     depends_on:
       - db
-    environment:
-      POSTGRES_USER: andreu
-      POSTGRES_PASSWORD: andreu
-      POSTGRES_SERVER: db
-      POSTGRES_PORT: 5432
-      POSTGRES_DB: chess_studio_local
-      STOCKFISH_PATH: /usr/games/stockfish
+    env_file: "./.env.docker"
 
 volumes:
   pgdata:
