@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from fastapi import HTTPException
 from datetime import datetime, timedelta, timezone
 import jwt
 from app.services.user_service import get_user_by_username
@@ -10,8 +11,10 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
 
 def get_authenticated_user(db: Session, username: str, password: str):
     user = get_user_by_username(db=db, username=username)
-    if not user or password != user.password:
-        return False
+    if not user:
+        raise HTTPException(status_code=401, detail="Usuario no encontrado")
+    elif password != user.password:
+        raise HTTPException(status_code=401, detail="Credenciales incorrectas")
     return user
 
 
