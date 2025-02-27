@@ -15,7 +15,6 @@ from app.services.user_service import (
 )
 from app.services.auth_service import (
     create_access_token,
-    get_authenticated_user,
 )
 
 
@@ -28,7 +27,7 @@ async def register_user(user: UserCreate, db: Session = Depends(get_db)):
     if existing_user_with_username:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="El username ya está en uso.",
+            detail="El nombre de usuario ya está en uso.",
         )
     existing_user_with_email = get_user_by_email(db, user.email)
     if existing_user_with_email:
@@ -47,9 +46,17 @@ async def login(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     db: Session = Depends(get_db),
 ):
-    user = get_authenticated_user(
-        db=db, username=form_data.username, password=form_data.password
-    )
+    user = get_user_by_username(db=db, username=form_data.username)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, 
+            detail="Usuario no encontrado"
+        )
+    elif form_data.password != user.password:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Credenciales incorrectas"
+        )
     acces_token_data = {"sub": user.username, "email": user.email}
     token = create_access_token(data=acces_token_data)
     return {"access_token": token, "token_type": "bearer"}
